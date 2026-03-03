@@ -6,6 +6,8 @@ class ClienteTCP
 {
     static void Main(string[] args)
     {
+        string nombreCliente = "Ale";
+
         Console.Write("Ingresa la IP del servidor: ");
         string ip = Console.ReadLine();
 
@@ -17,16 +19,20 @@ class ClienteTCP
             using (TcpClient cliente = new TcpClient())
             {
                 cliente.Connect(ip, puerto);
-                Console.WriteLine("Conectado al servidor.");
+                Console.WriteLine($"Cliente: {nombreCliente} conectado al servidor.");
 
                 NetworkStream stream = cliente.GetStream();
+
+                // 🔥 MENSAJE AUTOMÁTICO AL CONECTARSE
+                string mensajeConexion = nombreCliente + " conectado al servidor";
+                byte[] datosConexion = Encoding.UTF8.GetBytes(mensajeConexion);
+                stream.Write(datosConexion, 0, datosConexion.Length);
 
                 while (true)
                 {
                     Console.Write("\nEscribe un comando (SALIR para terminar): ");
                     string mensaje = Console.ReadLine();
 
-                    // Enviar mensaje al servidor
                     byte[] datosEnviar = Encoding.UTF8.GetBytes(mensaje);
                     stream.Write(datosEnviar, 0, datosEnviar.Length);
 
@@ -36,7 +42,6 @@ class ClienteTCP
                         break;
                     }
 
-                    // Recibir respuesta del servidor
                     byte[] datosRecibir = new byte[1024];
                     int bytesLeidos = stream.Read(datosRecibir, 0, datosRecibir.Length);
 
